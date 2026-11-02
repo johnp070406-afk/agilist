@@ -1,0 +1,19 @@
+# dependencies and build output
+node_modules/
+dist/
+.expo/
+*.apk
+*.aab
+
+# generated: the web screens bundled for the phone app (run sembang-mobile/scripts/sync-web.mjs)
+sembang-mobile/web/html.ts
+
+# local tooling and one-off files
+.claude/
+*.zip
+agilist-qr.png
+*.tsbuildinfo
+READ ME FIRST.txt
+.env
+.env.*
+.netlify/

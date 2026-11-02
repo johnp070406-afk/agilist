@@ -1,0 +1,55 @@
+{
+  "expo": {
+    "name": "Agilist",
+    "slug": "agilist",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#fbfaf6",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "app.agilist.demo",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Agilist listens while you talk with him, to find the right photo. Audio is never saved.",
+        "NSSpeechRecognitionUsageDescription": "Agilist turns what is said into text on your phone to find the matching photo. Nothing is recorded."
+      }
+    },
+    "android": {
+      "package": "app.agilist.demo",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1e5a43"
+      },
+      "permissions": [
+        "RECORD_AUDIO"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 160,
+          "resizeMode": "contain",
+          "backgroundColor": "#fbfaf6",
+          "dark": {
+            "image": "./assets/splash-icon.png",
+            "backgroundColor": "#131816"
+          }
+        }
+      ],
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Agilist listens while you talk with him, to find the right photo. Audio is never saved.",
+          "speechRecognitionPermission": "Agilist turns what is said into text on your phone to find the matching photo. Nothing is recorded.",
+          "androidSpeechServicePackages": [
+            "com.google.android.googlequicksearchbox"
+          ]
+        }
+      ],
+      "expo-status-bar"
+    ]
+  }
+}
