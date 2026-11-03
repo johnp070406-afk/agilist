@@ -3,7 +3,7 @@
 **A conversation aid for older people with dementia and the people who sit with them.**
 Built for Kaplan Singapore's *AI FOR IMPACT 2026* hackathon.
 
-**Try it:** https://agilist-care-110217617.netlify.app (phone or computer; sign up as Family, Caregiver or Friend)
+**Try it:** https://agilist-care-110217617.netlify.app (phone or computer; sign up as Family or Caregiver)
 
 ## The problem
 
@@ -20,17 +20,17 @@ The family's own old photos give them something to talk about.
    photo by meaning while they talk**. The caregiver sees the photo card and one open question.
 3. **Afterwards** Claude drafts a memory note from what was said. **The caregiver approves it** before anything is saved.
    Audio is never stored.
-4. **Friends** (church, old friends) can add photos too. The family decides what the care team sees.
+4. **The family decides** what the care team sees, photo by photo, and can pause all sharing.
 
 ## What is built
 
 | | |
 |---|---|
-| Three roles | Family, Caregiver, Friend. Real sign-up only; no demo accounts. |
+| Two roles | Family and Caregiver. Real sign-up only; no demo accounts. |
 | Real microphone | Browser speech recognition on computer and phone; typing when a device cannot listen. A native speech bridge for the Expo phone app. |
 | AI picks the photo | Claude matches what was said to the album by meaning, with a key-word fallback when AI is off. |
 | Photos from the device | Shrunk on the phone to a small JPEG before saving. |
-| Humans decide | Notes are saved only when the caregiver approves. AI drawings need the family's OK. Friends' photos need the family's OK. |
+| Humans decide | Notes are saved only when the caregiver approves. AI drawings need the family's OK. |
 | Consent enforced by the server | Per-photo sharing, and "pause sharing" which stops the server sending the care team anything. |
 | His stories | Approved notes gathered by the memory they were about (text only; no recording, no printed book). |
 | Appreciation both ways | The family sends the care team a thank-you with one-tap emoji; the caregiver sends a word back. |
@@ -60,7 +60,7 @@ npm run dev          # http://localhost:5173  (the microphone needs localhost or
 npm run build        # production build into dist/
 ```
 
-To use your own backend: create a Supabase project, run `supabase/schema.sql`, then `002_friends.sql`,
+To use your own backend: create a Supabase project, run `supabase/schema.sql`, then `002_friends.sql` (kept because later files build on it; the app no longer offers a Friend role),
 `003_pause_sharing.sql`, `004_elder_name.sql` in the SQL editor, deploy `supabase/functions/claude` and set the
 `ANTHROPIC_API_KEY` secret, then put the project URL and publishable key in `sembang-app/src/config.ts`.
 More detail is in `sembang-app/README.md`.

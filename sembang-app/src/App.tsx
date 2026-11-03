@@ -7,7 +7,7 @@ import { LiveSession } from "./caregiver/LiveSession";
 import { aiSource, getSample, setApiKey, type AISource } from "./realAI";
 import { Loop, Review } from "./caregiver/Review";
 import { CareAlbum, CareNotes } from "./caregiver/Tabs";
-import { AddPhoto, Consent, FamilyAlbum, FriendHome, FromHome, Stories } from "./family/Family";
+import { AddPhoto, Consent, FamilyAlbum, FromHome, Stories } from "./family/Family";
 import { Login } from "./Login";
 import { restore, signOut } from "./auth";
 import { useSync } from "./useSync";
@@ -28,7 +28,7 @@ function useIsMobile() {
 }
 
 const CAPTIONS: Record<string, [string, string]> = {
-  login: ["Sign in", "Each person signs in to their own side: family, caregiver or friend."],
+  login: ["Sign in", "Each person signs in to their own side: family or caregiver."],
   "care/home": ["Caregiver home", "One button and nothing to learn. She presses it before the conversation, not during it."],
   "care/live": ["Real microphone", "What is said appears as it's recognised. When the words point to a photo, the card comes up on its own."],
   "care/review": ["AI 3 · memory", "The recording is deleted first. The note is drafted, but nothing is saved until she approves it."],
@@ -39,8 +39,6 @@ const CAPTIONS: Record<string, [string, string]> = {
   "family/add": ["AI 1 · context", "A few hashtags in, background and questions for the caregiver out."],
   "family/home": ["What comes back", "Things her father said that she had never heard, and how he felt after each conversation."],
   "family/stories": ["Oral history", "His stories in his own words, gathered by memory from the notes caregivers approved."],
-  "friend/home": ["Friends' album", "Church friends and old friends add photos. The family checks each one before the care team sees it."],
-  "friend/add": ["Friends' album", "A friend's photo goes to the family first, never straight to the care team."],
   "family/consent": ["Consent", "Mental Capacity Act, LPA and PDPA: who agreed, who decides if he can't, and what happens to his data."],
 };
 
@@ -85,7 +83,7 @@ export function App() {
   const fam = state.fam;
   const careKey = care.view !== "home" ? care.view : care.tab;
   const famKey = fam.view === "add" ? "add" : fam.tab;
-  const screenKey = !state.signedIn ? "login" : state.role === "caregiver" ? `care/${careKey}` : state.role === "friend" ? `friend/${fam.view === "add" ? "add" : "home"}` : `family/${famKey}`;
+  const screenKey = !state.signedIn ? "login" : state.role === "caregiver" ? `care/${careKey}` : `family/${famKey}`;
   const [capTitle, capText] = CAPTIONS[screenKey] ?? ["", ""];
 
   useEffect(() => {
@@ -106,8 +104,6 @@ export function App() {
     else if (care.tab === "notes") body = <CareNotes />;
     else if (care.tab === "album") body = <CareAlbum />;
     else body = <CareHome />;
-  } else if (state.role === "friend") {
-    body = fam.view === "add" ? <AddPhoto /> : <FriendHome />;
   } else {
     if (fam.view === "add") body = <AddPhoto />;
     else if (fam.tab === "home") body = <FromHome />;
@@ -120,9 +116,9 @@ export function App() {
 
   const who = state.user && (
     <span className="who" title={state.user.email}>
-      <Icon name={state.role === "family" ? "people" : state.role === "friend" ? "smile" : "user"} size={16} />
+      <Icon name={state.role === "family" ? "people" : "user"} size={16} />
       <span className="who-name">{state.user.name}</span>
-      <span className="who-role">{state.role === "family" ? "Family" : state.role === "friend" ? "Friend" : "Caregiver"}</span>
+      <span className="who-role">{state.role === "family" ? "Family" : "Caregiver"}</span>
     </span>
   );
   const themeBtn = (
@@ -176,7 +172,7 @@ export function App() {
       </div>
     </Sheet>
   );
-  const showNav = state.role === "caregiver" ? careNav : state.role === "family" ? famNav : true;
+  const showNav = state.role === "caregiver" ? careNav : famNav;
   const signOutBtn = state.signedIn ? (
     <button type="button" className="theme-btn" onClick={() => { signOut(); dispatch({ type: "signOut" }); }} aria-label="Sign out" title="Sign out">
       <Icon name="logout" size={18} />

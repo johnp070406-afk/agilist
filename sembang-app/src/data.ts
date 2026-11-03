@@ -29,8 +29,6 @@ export interface Photo {
   year: string;
   tags: string[];
   memory?: string;
-  /** Who added it: the family (default) or a friend, whose photos the family approves first. */
-  from?: "family" | "friend";
   /** A thank-you from the family to the care team, sent with this photo. */
   thanks?: string;
   shared: boolean;

@@ -3,7 +3,7 @@ import { cloud } from "../config";
 import { joinElder } from "../sync";
 import { useStore } from "../store";
 
-// Shared sign-in only: a caregiver or a friend joins the family's album with the code the family shares.
+// Shared sign-in only: a caregiver joins the family's album with the code the family shares.
 export function JoinFamily({ intro }: { intro: string }) {
   const { state, dispatch } = useStore();
   const [code, setCode] = useState("");

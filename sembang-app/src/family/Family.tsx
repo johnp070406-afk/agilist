@@ -18,9 +18,7 @@ export function FamilyAlbum() {
   const { state, dispatch } = useStore();
   const [open, setOpen] = useState<Photo | null>(null);
   const [sheet, setSheet] = useState(false);
-  const own = state.photos.filter((p) => p.from !== "friend");
-  const friends = state.photos.filter((p) => p.from === "friend");
-  const waiting = friends.filter((p) => !p.shared).length;
+  const own = state.photos;
   const sharedCount = own.filter((p) => p.shared).length;
 
   useEffect(() => {
@@ -85,30 +83,6 @@ export function FamilyAlbum() {
           </li>
         ))}
       </ul>
-
-      {friends.length > 0 && (
-        <section className="friends-sec" aria-labelledby="friends-h">
-          <h2 id="friends-h">From his friends</h2>
-          <p className="sub">{waiting > 0 ? `${waiting} waiting for you. Turn one on to let the care team use it in conversations.` : "Photos his friends have sent. Turn one off to hide it from the care team."}</p>
-      <ul className="grid">
-          {friends.map((p) => (
-            <li key={p.id} id={`tile-${p.id}`} className={state.fam.highlightId === p.id ? "highlight" : ""}>
-              <div className="tile">
-                <button type="button" className="tile-open" onClick={() => { setOpen(p); setSheet(true); }} aria-label={`Open ${p.title}`}>
-                  <Picture photo={p} size="thumb" />
-                  <span className="tile-title">{p.title}</span>
-                  <span className="tile-sub">From {p.addedBy}</span>
-                </button>
-                <div className="tile-share">
-                  <span className={p.shared ? "on" : ""}>{p.shared ? "Shared" : "Not yet"}</span>
-                  <Toggle on={p.shared} label={`Share ${p.title} with the care team`} onChange={() => dispatch({ type: "toggleShare", id: p.id })} />
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
-        </section>
-      )}
     </div>
   );
 }
@@ -190,8 +164,7 @@ export function AddPhoto() {
   const [tags, setTags] = useState<string[]>([]);
   const [memory, setMemory] = useState("");
   const [thanks, setThanks] = useState("");
-  const friend = state.role === "friend";
-  const [shared, setShared] = useState(!friend);
+  const [shared, setShared] = useState(true);
   const [stage, setStage] = useState<"pick" | "form" | "working" | "preview">("pick");
   const [ai, setAi] = useState<AIPreview | null>(null);
   const [live, setLive] = useState(false);
@@ -240,10 +213,9 @@ export function AddPhoto() {
     year: year.trim() || "Year unknown",
     tags,
     memory: memory.trim() || undefined,
-    thanks: friend ? undefined : thanks.trim() || undefined,
-    shared: friend ? false : shared,
-    from: friend ? "friend" : "family",
-    addedBy: state.user?.name ?? (friend ? "A friend" : "Family"),
+    thanks: thanks.trim() || undefined,
+    shared,
+    addedBy: state.user?.name ?? "Family",
     addedOn: today(),
     context: ai?.context ?? preview.context,
     questions: ai?.questions ?? preview.questions,
@@ -259,7 +231,7 @@ export function AddPhoto() {
         <input ref={fileRef} id="photo-file" className="sr-only" type="file" accept="image/*" onChange={(e) => onFile(e.target.files?.[0])} />
         <Button icon="plus" disabled={reading} onClick={() => fileRef.current?.click()}>{reading ? "Opening the photo…" : "Choose a photo"}</Button>
         {pickError && <p className="login-error" role="alert">{pickError}</p>}
-        <p className="hint">{friend ? "The family sees it first and decides whether the care team can use it." : "Only the family and, if you share it, the care team can see it."}</p>
+        <p className="hint">Only the family and, if you share it, the care team can see it.</p>
       </div>
     );
   }
@@ -275,20 +247,16 @@ export function AddPhoto() {
           {ai ? "Written by Claude just now, from your hashtags. Edit the hashtags to try again." : live ? "AI couldn't answer just now, so these are general questions. Go back and try again." : "AI is off here, so these are general questions that are not written for this photo. Sign in with the shared sign-in to let AI write them."}
         </p>
         <ResultCard photo={draft} />
-        {friend ? (
-          <p className="hint">The family will check this photo before the care team can use it.</p>
-        ) : (
-          <div className="share-row">
-            <div>
-              <strong>Share with the care team</strong>
-              <span>{shared ? `The care team can see this` : "Only the family can see this"}</span>
-            </div>
-            <Toggle on={shared} onChange={setShared} label="Share with the care team" />
+        <div className="share-row">
+          <div>
+            <strong>Share with the care team</strong>
+            <span>{shared ? `The care team can see this` : "Only the family can see this"}</span>
           </div>
-        )}
+          <Toggle on={shared} onChange={setShared} label="Share with the care team" />
+        </div>
         <div className="btn-row">
           <Button variant="ghost" onClick={() => setStage("form")}>Edit</Button>
-          <Button icon="check" onClick={() => dispatch({ type: "addPhoto", photo: draft })}>{friend ? "Send to the family" : "Save to album"}</Button>
+          <Button icon="check" onClick={() => dispatch({ type: "addPhoto", photo: draft })}>Save to album</Button>
         </div>
       </div>
     );
@@ -318,26 +286,23 @@ export function AddPhoto() {
 
       <label className="field" htmlFor="ph-memory">
         <span>One line about it <em>(optional)</em></span>
-        <input id="ph-memory" value={memory} onChange={(e) => setMemory(e.target.value)} placeholder={friend ? "We sang in the church choir together." : "Dad's first job. He worked there 31 years."} />
+        <input id="ph-memory" value={memory} onChange={(e) => setMemory(e.target.value)} placeholder="Dad's first job. He worked there 31 years." />
       </label>
 
-      {!friend && (
-        <>
-          <label className="field" htmlFor="ph-thanks">
-            <span>A thank-you for the care team <em>(optional)</em></span>
-            <input id="ph-thanks" value={thanks} onChange={(e) => setThanks(e.target.value)} maxLength={160} placeholder={`Thank you for sitting with ${state.elderName || "Dad"} every day.`} />
-          </label>
-          <EmojiRow label="Add a feeling to the thank-you" onPick={(e) => setThanks((t) => withEmoji(t, e))} />
+      <label className="field" htmlFor="ph-thanks">
+        <span>A thank-you for the care team <em>(optional)</em></span>
+        <input id="ph-thanks" value={thanks} onChange={(e) => setThanks(e.target.value)} maxLength={160} placeholder={`Thank you for sitting with ${state.elderName || "Dad"} every day.`} />
+      </label>
+      <EmojiRow label="Add a feeling to the thank-you" onPick={(e) => setThanks((t) => withEmoji(t, e))} />
 
-          <div className="share-row">
-            <div>
-              <strong>Share with the care team</strong>
-              <span>{shared ? `The care team can see this` : "Only the family can see this"}</span>
-            </div>
-            <Toggle on={shared} onChange={setShared} label="Share with the care team" />
-          </div>
-        </>
-      )}
+      <div className="share-row">
+        <div>
+          <strong>Share with the care team</strong>
+          <span>{shared ? `The care team can see this` : "Only the family can see this"}</span>
+        </div>
+        <Toggle on={shared} onChange={setShared} label="Share with the care team" />
+      </div>
+
 
       {live && <p className="ai-source live"><Icon name="sparkle" size={15} />Live AI is on. Try your own title and hashtags: Claude writes the background and questions.</p>}
       <Button icon="sparkle" disabled={tags.length === 0} onClick={() => { setAi(null); setStage("working"); }}>
@@ -494,7 +459,7 @@ export function Consent() {
         </ul>
         <h3>They can't</h3>
         <ul className="no">
-          <li><Icon name="x" size={15} />See photos you haven't shared, or photos from friends you haven't turned on</li>
+          <li><Icon name="x" size={15} />See photos you haven't shared</li>
           <li><Icon name="x" size={15} />See anything while sharing is paused</li>
         </ul>
         <p className="hint">The app can't stop someone from taking a screenshot of a photo they can see. Share only what you're comfortable with.</p>
@@ -530,42 +495,6 @@ export function Consent() {
         <Button icon="check" disabled={busy} onClick={() => share(true)}>{busy ? "Turning it on…" : "Turn sharing back on"}</Button>
       )}
       {err && <p className="login-error" role="alert">{err}</p>}
-    </div>
-  );
-}
-
-/* ---------------- a friend's side ---------------- */
-
-// Church friends and old friends add photos of times they shared with him. The family approves each one.
-export function FriendHome() {
-  const { state, dispatch } = useStore();
-  const mine = state.photos.filter((p) => p.from === "friend");
-  const needsCode = !!cloud() && !state.link;
-  return (
-    <div className="stack">
-      <header className="screen-head">
-        <p className="eyebrow">Friend{state.user ? ` · ${state.user.name}` : ""}</p>
-        <h1>Photos for him</h1>
-        <p className="sub">Old photos of times you spent together give him more to talk about. The family checks each one before the care team uses it.</p>
-      </header>
-      <JoinFamily intro="Ask his family for their 6-character code. Then you can send photos for him." />
-      <Button icon="plus" disabled={needsCode} onClick={() => dispatch({ type: "openAdd" })}>Add a photo</Button>
-      {needsCode && <p className="hint">Enter the family's code first.</p>}
-      {mine.length === 0 ? (
-        !needsCode && <p className="hint">You haven't sent any photos yet.</p>
-      ) : (
-        <ul className="grid">
-          {mine.map((p) => (
-            <li key={p.id}>
-              <div className="tile">
-                <Picture photo={p} size="thumb" />
-                <span className="tile-title">{p.title}</span>
-                <span className={`pill ${p.shared ? "green" : ""}`}>{p.shared ? "The care team can use it" : "Waiting for the family"}</span>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
     </div>
   );
 }

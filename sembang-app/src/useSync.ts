@@ -26,15 +26,13 @@ export function useSync() {
   const role = state.role;
   const items = (kind: Kind): Item[] => (kind === "photos" ? latest.current.photos : latest.current.notes);
   // Caregivers can add drawings and notes, but not change the family's photos (the album enforces this too).
-  const mine = (kind: Kind): Item[] => {
-    if (role === "friend") return kind === "photos" ? items(kind).filter((p) => (p as Photo).from === "friend") : [];
-    return kind === "photos" && role === "caregiver" ? items(kind).filter((p) => (p as Photo).kind === "drawing") : items(kind);
-  };
+  const mine = (kind: Kind): Item[] =>
+    kind === "photos" && role === "caregiver" ? items(kind).filter((p) => (p as Photo).kind === "drawing") : items(kind);
 
   const pending = (kind: Kind) => {
     const changed = mine(kind).filter((i) => synced.current.get(key(kind, i.id)) !== JSON.stringify(i));
     const present = new Set(items(kind).map((i) => i.id));
-    const removed = (kind === "photos" && role === "caregiver") || (kind === "notes" && role === "friend") ? [] :
+    const removed = kind === "photos" && role === "caregiver" ? [] :
       [...synced.current.keys()].filter((k) => k.startsWith(`${kind}:`) && !present.has(k.slice(kind.length + 1))).map((k) => k.slice(kind.length + 1));
     return { changed, removed };
   };
@@ -62,8 +60,7 @@ export function useSync() {
   };
 
   const refresh = async (elderId: string) => {
-    // A friend never reads the care notes, even if the server would allow it.
-    const [photos, notes] = await Promise.all([pull<Photo>(elderId, "photos"), role === "friend" ? Promise.resolve([]) : pull<Note>(elderId, "notes")]);
+    const [photos, notes] = await Promise.all([pull<Photo>(elderId, "photos"), pull<Note>(elderId, "notes")]);
     synced.current.clear();
     ords.current.clear();
     const take = <T extends Item>(kind: Kind, rows: Row<T>[]) => rows.map((r) => {

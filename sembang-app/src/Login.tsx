@@ -95,11 +95,6 @@ export function Login() {
                 <strong>Caregiver</strong>
                 <span>Start conversations</span>
               </button>
-              <button type="button" aria-pressed={role === "friend"} onClick={() => setRole("friend")}>
-                <Icon name="smile" size={20} />
-                <strong>Friend</strong>
-                <span>Church or old friends: share photos</span>
-              </button>
             </div>
           </fieldset>
         )}

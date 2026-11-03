@@ -3,7 +3,7 @@ import type { User } from "./auth";
 import type { Link } from "./sync";
 import { today, type Mood, type Note, type Photo, type Stage } from "./data";
 
-export type Role = "caregiver" | "family" | "friend";
+export type Role = "caregiver" | "family";
 export type CareTab = "home" | "notes" | "album";
 export type CareView = "home" | "live" | "review" | "loop";
 export type FamTab = "album" | "home" | "stories" | "consent";
@@ -184,7 +184,7 @@ function reducer(state: State, action: Action): State {
         ...state,
         photos: [action.photo, ...state.photos],
         fam: { tab: "album", view: "album", highlightId: action.photo.id },
-        toast: toast(action.photo.from === "friend" ? "Sent. The family will check it before the care team sees it." : action.photo.shared ? "Added and shared with the care team" : "Added to the family album only"),
+        toast: toast(action.photo.shared ? "Added and shared with the care team" : "Added to the family album only"),
       };
     case "toggleShare": {
       const photos = state.photos.map((p) => (p.id === action.id ? { ...p, shared: !p.shared } : p));

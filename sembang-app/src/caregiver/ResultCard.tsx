@@ -65,7 +65,7 @@ export function ResultCard({ photo, at, stream = false, showable = false }: {
   return (
     <article className="result">
       <div className="result-top">
-        <SourceChip kind={photo.kind} from={photo.from} />
+        <SourceChip kind={photo.kind} />
         {at && <span className="mono-small">{at}</span>}
       </div>
 

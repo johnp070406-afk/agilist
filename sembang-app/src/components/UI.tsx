@@ -50,8 +50,7 @@ export function Picture({ photo, size = "full" }: { photo: Pick<Photo, "scene" |
   );
 }
 
-export function SourceChip({ kind, from }: { kind: Photo["kind"]; from?: Photo["from"] }) {
-  if (kind === "photo" && from === "friend") return <span className="source-chip family"><Icon name="smile" size={13} />From his friends</span>;
+export function SourceChip({ kind }: { kind: Photo["kind"] }) {
   if (kind === "heritage") return <span className="source-chip heritage"><Icon name="building" size={13} />Agilist heritage set</span>;
   return kind === "drawing" ? (
     <span className="source-chip drawn"><Icon name="brush" size={13} />Drawn from his words</span>

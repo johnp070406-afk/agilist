@@ -65,7 +65,7 @@ interface CloudSession { access_token: string; refresh_token?: string; user: { e
 const toUser = (s: CloudSession): User => ({
   email: normEmail(s.user.email ?? ""),
   name: s.user.user_metadata?.name || (s.user.email ?? "").split("@")[0],
-  role: s.user.user_metadata?.role === "family" ? "family" : s.user.user_metadata?.role === "friend" ? "friend" : "caregiver",
+  role: s.user.user_metadata?.role === "family" ? "family" : "caregiver",
 });
 
 async function call(path: string, body: unknown, bearer?: string, method = "POST"): Promise<Record<string, unknown>> {

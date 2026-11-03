@@ -196,7 +196,7 @@ export function LiveSession() {
         {match && (
           <li className="beat k-found">
             <span className="beat-time">{fmt(match.at)}</span>
-            <div className="beat-body"><span><Icon name="check" size={14} />{match.manual ? "You chose" : match.ai ? `AI matched “${match.word}”.` : `Heard “${match.word}”.`} {match.photo.kind === "heritage" ? "From the heritage set" : match.photo.from === "friend" ? "From his friends' photos" : "Found in the family album"}: {match.photo.title}</span></div>
+            <div className="beat-body"><span><Icon name="check" size={14} />{match.manual ? "You chose" : match.ai ? `AI matched “${match.word}”.` : `Heard “${match.word}”.`} {match.photo.kind === "heritage" ? "From the heritage set" : "Found in the family album"}: {match.photo.title}</span></div>
           </li>
         )}
         {listening && !interim && <li className="beat typing" aria-hidden="true"><span className="beat-time" /><span className="dots"><i /><i /><i /></span></li>}

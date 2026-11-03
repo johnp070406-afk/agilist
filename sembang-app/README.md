@@ -26,7 +26,7 @@ Run these in the SQL editor, in order:
 | File | What it adds |
 |---|---|
 | `supabase/schema.sql` | Tables `elders`, `memberships`, `photos`, `notes`; row-level security; `create_elder`, `join_elder`, `my_elder` |
-| `supabase/002_friends.sql` | The Friend role; a friend sees only their own photos and never the notes |
+| `supabase/002_friends.sql` | A role and a column for a Friend album. The app no longer offers that role, but `003` builds on this file, so run it |
 | `supabase/003_pause_sharing.sql` | "Pause sharing", enforced by the server |
 | `supabase/004_elder_name.sql` | The name the family uses for him |
 
@@ -59,7 +59,7 @@ src/
   ai.ts                      what is shown for a photo when AI is off (general questions only)
   data.ts                    types, stages, moods, the small heritage set
   caregiver/                 home, live conversation, picture card, review, notes, album
-  family/                    album, add photo, from home, stories, consent, friend home
+  family/                    album, add photo, from home, stories, consent
   components/                picture frames, sheets, toggles, emoji row, icons
 supabase/                    SQL and the Edge Function
 scripts/                     build.mjs, pack.mjs
